@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -10,10 +10,12 @@ import "jspdf-autotable";
 const LessonPlanPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const lessonPlan = useMemo(() => location?.state?.lessonPlan || { outline: [] }, [location.state?.lessonPlan]);
+  const [lessonPlan, setLessonPlan] = useState(location?.state?.lessonPlan || { outline: [], materials: [], objectives: [] });
+
 
   const [remarks, setRemarks] = useState([]);
   const lessonPlanRef = useRef();
+  const [outline, setOutline] = useState(lessonPlan.outline || []);
 
   useEffect(() => {
     console.log("Lesson Outline Data:", lessonPlan.outline);
@@ -112,7 +114,12 @@ const downloadPDF = () => {
   }
 };
 
-  
+const handleOutlineChange = (index, field, value) => {
+  const updatedOutline = [...outline];
+  updatedOutline[index][field] = value;
+  setOutline(updatedOutline);
+};
+
 
 
   return (
@@ -125,32 +132,55 @@ const downloadPDF = () => {
         <CardContent>
           <div className="bg-indigo-600 text-white p-3 font-bold text-lg rounded-t-md">Summary</div>
           <div className="border border-gray-300 rounded-b-md overflow-hidden">
-            {[{ label: "Date", value: lessonPlan.date }, { label: "Subject", value: lessonPlan.subject || lessonPlan.topic }, { label: "Grade Level", value: lessonPlan.gradeLevel }, { label: "Main Topic or Unit", value: lessonPlan.mainConcept }, { label: "Subtopics", value: lessonPlan.subtopics }].map((item, index) => (
-              <div key={index} className="grid grid-cols-2 border-b last:border-none p-3 bg-white">
-                <p className="font-semibold text-gray-700">{item.label}:</p>
-                <p className="text-gray-900">{item.value}</p>
-              </div>
-            ))}
+            {[{ label: "Date", key: "date" }, 
+              { label: "Subject", key: "subject", fallback: "topic" },  // Added fallback for Subject
+              { label: "Grade Level", key: "gradeLevel" }, 
+              { label: "Main Topic or Unit", key: "mainConcept" }, 
+              { label: "Subtopics", key: "subtopics" }].map((item, index) => (
+                <div key={index} className="grid grid-cols-2 border-b last:border-none p-3 bg-white">
+                  <p className="font-semibold text-gray-700">{item.label}:</p>
+                  <input
+                    type="text"
+                    value={lessonPlan[item.key] || lessonPlan[item.fallback] || ""} // Use fallback if key is empty
+                    onChange={(e) => setLessonPlan({ ...lessonPlan, [item.key]: e.target.value })}
+                    className="text-gray-900 w-full p-1 border rounded"
+                  />
+                </div>
+              ))
+              }
           </div>
 
+          {/* Materials Needed Section */}
           <div className="bg-gray-900 text-white p-3 font-bold text-lg mt-6 rounded-t-md">Materials Needed</div>
           <div className="border border-gray-300 p-4 space-y-2 rounded-b-md bg-white">
             {(Array.isArray(lessonPlan.materials) ? lessonPlan.materials : lessonPlan.materials?.split(",") || []).map((material, index) => (
               <div key={index} className="flex items-center space-x-2">
                 <Checkbox />
-                <p>{material.trim()}</p>
+                <input
+                  type="text"
+                  value={material.trim()}
+                  onChange={(e) => {
+                    const updatedMaterials = [...lessonPlan.materials];
+                    updatedMaterials[index] = e.target.value;
+                    setLessonPlan({ ...lessonPlan, materials: updatedMaterials });
+                  }}
+                  className="w-full p-1 border rounded"
+                />
               </div>
             ))}
           </div>
 
+          {/* Learning Objectives Section */}
           <div className="bg-indigo-600 text-white p-3 font-bold text-lg mt-6 rounded-t-md">Learning Objectives</div>
           <div className="border border-gray-300 p-4 rounded-b-md bg-white">
-            <ul className="list-disc pl-5 text-gray-900">
-              {(Array.isArray(lessonPlan.objectives) ? lessonPlan.objectives : lessonPlan.objectives?.split("\n") || []).map((objective, index) => (
-                <li key={index}>{objective.trim()}</li>
-              ))}
-            </ul>
+            <textarea
+              value={Array.isArray(lessonPlan.objectives) ? lessonPlan.objectives.join("\n") : lessonPlan.objectives || ""}
+              onChange={(e) => setLessonPlan({ ...lessonPlan, objectives: e.target.value.split("\n") })}
+              className="w-full p-2 border rounded resize-none"
+              rows={4}
+            />
           </div>
+
 
           <div className="bg-indigo-600 text-white p-3 font-bold text-lg mt-6 rounded-t-md">Lesson Outline</div>
             <div className="border border-gray-300 p-4 rounded-b-md bg-white overflow-x-auto">
@@ -166,8 +196,20 @@ const downloadPDF = () => {
                   {lessonPlan.outline.length > 0 ? (
                     lessonPlan.outline.map((row, index) => (
                       <tr key={index} className="bg-indigo-50 border border-indigo-300">
-                        <td className="border border-indigo-400 p-3">{row.duration}</td>
-                        <td className="border border-indigo-400 p-3">{row.guide}</td>
+                        <td className="border border-indigo-400 p-3">
+                          <input
+                          type="text"
+                          value={row.duration || ""}
+                          onChange={(e) => handleOutlineChange(index, "duration", e.target.value)}
+                          className="w-full p-2 border rounded"
+                        /></td>
+                        <td className="border border-indigo-400 p-3">
+                        <textarea
+                          value={row.guide || ""}
+                          onChange={(e) => handleOutlineChange(index, "guide", e.target.value)}
+                          className="w-full p-2 border rounded resize-none"
+                          rows={2} // Starting height
+                        /></td>
                         <td className="border border-indigo-400 p-3">
                           <Textarea
                             value={remarks[index] || ""}
