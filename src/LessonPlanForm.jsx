@@ -83,7 +83,7 @@ const LessonPlanForm = () => {
       - A structured **Lesson Outline** with 6-8 sections.
       - Each section should have:
           1. **Duration (in minutes)**
-          2. **Main Topic & Subtopics Covered**
+          2. **Main Topic & Subtopics Covered in brief about 20-40 words**
       - Present the output clearly and concisely.`;
 
       const result = await model.generateContent(prompt);
