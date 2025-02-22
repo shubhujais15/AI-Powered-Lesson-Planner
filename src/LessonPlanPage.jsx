@@ -200,34 +200,42 @@ const handleOutlineChange = (index, field, value) => {
 
       <div className="bg-indigo-600 dark:bg-indigo-500 text-white p-3 font-bold text-lg mt-6 rounded-t-md">Lesson Outline</div>
       <div className="border border-gray-300 dark:border-gray-600 p-4 rounded-b-md bg-white dark:bg-gray-800 overflow-x-auto">
-        <table className="min-w-full border-collapse">
+        <table className="w-full border-collapse">
           <thead>
-            <tr className="bg-indigo-200 dark:bg-indigo-500 text-black dark:text-white border border-indigo-400">
-              <th className="border border-indigo-400 p-3 font-bold text-left">Duration</th>
-              <th className="border border-indigo-400 p-3 font-bold text-left">Guide</th>
-              <th className="border border-indigo-400 p-3 font-bold text-left">Remarks</th>
+            <tr className="bg-indigo-200 dark:bg-indigo-500 text-black dark:text-white border border-indigo-400 text-lg">
+              <th className="border border-indigo-400 p-4 font-semibold text-left w-[15%] md:w-[20%]">Duration</th>
+              <th className="border border-indigo-400 p-4 font-semibold text-left w-[70%] md:w-[50%]">Guide</th>
+              <th className="border border-indigo-400 p-4 font-semibold text-left w-[15%] md:w-[20%]">Remarks</th>
             </tr>
           </thead>
           <tbody>
             {lessonPlan.outline.length > 0 ? (
               lessonPlan.outline.map((row, index) => (
                 <tr key={index} className="bg-indigo-50 dark:bg-gray-700 border border-indigo-300 dark:border-gray-600">
-                  <td className="border border-indigo-400 dark:border-gray-500 p-3">
+                  {/* Duration Input */}
+                  <td className="border border-indigo-400 dark:border-gray-500 p-3 w-[15%] md:w-[20%]">
                     <input
-                    type="text"
-                    value={row.duration || ""}
-                    onChange={(e) => handleOutlineChange(index, "duration", e.target.value)}
-                    className="w-full p-2 border rounded bg-white dark:bg-gray-700 dark:text-gray-200"
-                  /></td>
-                  <td className="border border-indigo-400 dark:border-gray-500 p-3">
-                  <textarea
-                    value={row.guide || ""}
-                    onChange={(e) => handleOutlineChange(index, "guide", e.target.value)}
-                    className="w-full p-2 border rounded resize-none bg-white dark:bg-gray-700 dark:text-gray-200"
-                    rows={2}
-                  /></td>
-                  <td className="border border-indigo-400 dark:border-gray-500 p-3">
-                    <Textarea
+                      type="text"
+                      value={row.duration || ""}
+                      onChange={(e) => handleOutlineChange(index, "duration", e.target.value)}
+                      className="w-full min-w-[80px] p-3 text-lg font-medium border rounded-md focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 dark:text-gray-200"
+                    />
+                  </td>
+
+                  {/* Guide Textarea - Increased Width for Small Screens */}
+                  <td className="border border-indigo-400 dark:border-gray-500 p-3 w-[70%] md:w-[50%]">
+                    <textarea
+                      value={row.guide || ""}
+                      onChange={(e) => handleOutlineChange(index, "guide", e.target.value)}
+                      className="w-full min-w-[200px] p-3 text-lg font-medium border rounded-md resize-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 dark:text-gray-200
+                      min-h-[120px] md:min-h-[140px] lg:min-h-[160px]"
+                      rows={5}
+                    />
+                  </td>
+
+                  {/* Remarks Textarea */}
+                  <td className="border border-indigo-400 dark:border-gray-500 p-3 w-[15%] md:w-[20%]">
+                    <textarea
                       value={remarks[index] || ""}
                       onChange={(e) => {
                         const updatedRemarks = [...remarks];
@@ -235,19 +243,24 @@ const handleOutlineChange = (index, field, value) => {
                         setRemarks(updatedRemarks);
                       }}
                       placeholder="Add reminders..."
-                      className="border-none bg-transparent dark:bg-gray-700 dark:text-gray-200 focus:ring-0"
+                      className="w-full min-w-[100px] p-3 text-lg font-medium border-none bg-transparent dark:bg-gray-700 dark:text-gray-200 focus:ring-0
+                      min-h-[80px] md:min-h-[100px]"
+                      rows={3}
                     />
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="3" className="text-center p-4 text-gray-500">No lesson outline available</td>
+                <td colSpan="3" className="text-center p-5 text-gray-500 text-lg font-medium">
+                  No lesson outline available
+                </td>
               </tr>
             )}
           </tbody>
         </table>
       </div>
+
 
         {/* Notes */}
         <div className="bg-blue-600 text-white p-2 font-bold text-lg mt-6">Notes</div>
