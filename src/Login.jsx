@@ -27,7 +27,7 @@ const Login = () => {
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       {/* Animated AI-Powered Lesson Planner Title */}
       <motion.h1
-        className="text-4xl font-extrabold text-black mb-20"
+        className="text-4xl font-extrabold text-black mb-20 text-center mx-auto max-w-[90%] md:max-w-full whitespace-normal"
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, type: "spring", stiffness: 100 }}
@@ -36,6 +36,7 @@ const Login = () => {
       >
         AI-Powered Lesson Planner 🚀
       </motion.h1>
+
 
       <motion.div
         initial={{ opacity: 0, y: -20 }}
